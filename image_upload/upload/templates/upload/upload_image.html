@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Bild hochladen</title>
+</head>
+<body>
+    <h2>Bild hochladen</h2>
+    <form action="{% url 'upload_image' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Hochladen</button>
+    </form>
+
+    {% if image_path %}
+        <h3>Bild hochgeladen:</h3>
+        <img src="/media/{{ image_path }}" alt="Hochgeladenes Bild" width="300px">
+    {% endif %}
+</body>
+</html>
