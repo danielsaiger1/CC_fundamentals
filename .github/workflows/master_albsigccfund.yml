@@ -69,3 +69,4 @@ jobs:
           app-name: 'albsigccfund'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_71C43EA0983C45D6B2C8D9FA49C944E8 }}
+          package: '.'
