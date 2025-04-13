@@ -12,28 +12,13 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 from .forms import ImageUploadForm
+from .classification import ImageClassifier
 
 model = tf.keras.applications.MobileNetV2()
 
-
-def image_preprocess(image_array):
-    return tf.keras.applications.mobilenet_v2.preprocess_input(image_array[tf.newaxis, ...])
-
-def get_tags(probs, labels, max_classes=5, prob_threshold=0.01):
-    probs_mask = probs > prob_threshold
-    probs_filtered = probs[probs_mask] * 100
-    labels_filtered = labels[probs_mask]
-    
-    sorted_index = np.flip(np.argsort(probs_filtered))
-    labels_filtered = labels_filtered[sorted_index][:max_classes]
-    probs_filtered = probs_filtered[sorted_index][:max_classes].astype(int)
-    
-    tags = ''
-    for i in range(0, len(labels_filtered)):
-        tags = tags + labels_filtered[i] + ' (' + str(probs_filtered[i]) + '%), ' 
-
-    return tags, labels_filtered, probs_filtered
-
+# Load Labels
+LABELS_URL = 'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt'
+labels = ImageClassifier.get_labels(LABELS_URL)
 
 def upload_image(request):
     form = ImageUploadForm()
@@ -54,29 +39,15 @@ def upload_image(request):
             img = load_img(image_path, target_size=[224, 224])
             img_array = img_to_array(img, dtype=np.int32)
 
-            # Vorverarbeitung des Bildes
-            img_array = image_preprocess(img_array)
+            img_array = ImageClassifier.image_preprocess(img_array)
 
-            # Vorhersage generieren
             result = model.predict(img_array)
             np_result = result[0]
 
-            # Labels laden (kann auch aus einer Datei geladen werden)
-            LABELS_URL = 'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt'
-            labels_path = tf.keras.utils.get_file('ImageNetLabels.txt', LABELS_URL)
-            labels = np.array(open(labels_path).read().splitlines())[1:]
+            labels_filtered, probs_filtered = ImageClassifier.get_tags(np_result, labels)
 
-            # Tags extrahieren
-            tags, labels_filtered, probs_filtered = get_tags(np_result, labels)
-
-            # Zeige das Vorhersage-Ergebnis an
-            prediction_result = {
-                'tags': tags,
-                'labels': labels_filtered,
-                'probs': probs_filtered,
-            }
-
-    
-
+            prediction_result = {}
+            for i in range(0, len(labels_filtered)):
+                prediction_result[str(labels_filtered[i])] = int(probs_filtered[i])
 
     return render(request, 'upload/upload_image.html', {'image_path': image_name, 'form': form, 'prediction_result': prediction_result})
