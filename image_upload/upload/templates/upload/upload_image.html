@@ -2,19 +2,23 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Bild hochladen</title>
+    <title>Image classifier</title>
 </head>
 <body>
-    <h2>Bild hochladen</h2>
+    <h2>Upload Image</h2>
     <form action="{% url 'upload_image' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Hochladen</button>
+        <button type="submit">Upload</button>
     </form>
 
     {% if image_path %}
-        <h3>Bild hochgeladen:</h3>
+        <h3>Uploaded image:</h3>
         <img src="/media/{{ image_path }}" alt="Hochgeladenes Bild" width="300px">
+        <p><strong>Top Labels:</strong></p>
+        <ul>
+            {{prediction_result.tags}}
+        </ul>
     {% endif %}
 </body>
 </html>
