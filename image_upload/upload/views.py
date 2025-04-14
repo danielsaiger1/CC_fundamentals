@@ -6,19 +6,13 @@ from django.shortcuts import render
 from django.conf import settings
 
 import os
-import numpy as np
 
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
+from ultralytics import YOLO
 
 from .forms import ImageUploadForm
 from .classification import ImageClassifier
 
-model = tf.keras.applications.MobileNetV2()
-
-# Load Labels
-LABELS_URL = 'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt'
-labels = ImageClassifier.get_labels(LABELS_URL)
+model = YOLO('yolo11n-cls.pt')
 
 def upload_image(request):
     form = ImageUploadForm()
@@ -35,19 +29,15 @@ def upload_image(request):
         with open(image_path, 'wb+') as f:
             for chunk in image.chunks():
                 f.write(chunk)
-            
-            img = load_img(image_path, target_size=[224, 224])
-            img_array = img_to_array(img, dtype=np.int32)
 
-            img_array = ImageClassifier.image_preprocess(img_array)
-
-            result = model.predict(img_array)
-            np_result = result[0]
-
-            labels_filtered, probs_filtered = ImageClassifier.get_tags(np_result, labels)
-
-            prediction_result = {}
-            for i in range(0, len(labels_filtered)):
-                prediction_result[str(labels_filtered[i])] = int(probs_filtered[i])
+        results = model(image_path)
+        for result in results:
+            prediction_result = {
+                'class' : f"{result.names[result.probs.top1]}",
+                'prob' : f"{result.probs.top1conf:.2f}"
+            }
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        
 
     return render(request, 'upload/upload_image.html', {'image_path': image_name, 'form': form, 'prediction_result': prediction_result})
