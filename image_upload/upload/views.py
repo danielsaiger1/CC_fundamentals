@@ -10,7 +10,6 @@ import os
 from ultralytics import YOLO
 
 from .forms import ImageUploadForm
-from .classification import ImageClassifier
 
 model = YOLO('yolo11n-cls.pt')
 
