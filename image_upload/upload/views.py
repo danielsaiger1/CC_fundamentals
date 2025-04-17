@@ -35,9 +35,6 @@ def upload_image(request):
             prediction_result = {
                 'class' : f"{result.names[result.probs.top1]}",
                 'prob' : f"{result.probs.top1conf:.2f}"
-            }
-        if os.path.exists(image_path):
-            os.remove(image_path)
-        
+            }        
 
     return render(request, 'upload/upload_image.html', {'image_path': image_name, 'form': form, 'prediction_result': prediction_result})
