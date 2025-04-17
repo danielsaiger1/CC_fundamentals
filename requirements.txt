@@ -2,3 +2,4 @@ Pillow
 tensorflow
 numpy
 matplotlib
+django
