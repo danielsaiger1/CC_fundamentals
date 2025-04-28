@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from ultralytics import YOLO
 
 app = Flask(__name__)
+model = YOLO('yolo11n-cls.pt')
+
 
 @app.route('/')
 def hello_world():
@@ -9,7 +11,6 @@ def hello_world():
 
 @app.route('/classify', methods=['POST'])
 def classify_image():
-    model = YOLO('yolo11n-cls.pt')
 
     img = request.files['image']
 
