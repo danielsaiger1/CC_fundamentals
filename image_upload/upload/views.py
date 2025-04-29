@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.conf import settings
 
 import os
+import requests
 
 from ultralytics import YOLO
 
@@ -17,6 +18,8 @@ def upload_image(request):
     form = ImageUploadForm()
     image_name = None
     prediction_result = None
+    prediction_result_flask = None
+    url = 'http://localhost:5000/classify'
 
     if request.method == 'POST' and request.FILES['image']:
         form = ImageUploadForm(request.POST, request.FILES)
@@ -30,10 +33,16 @@ def upload_image(request):
                 f.write(chunk)
 
         results = model(image_path)
+        with open(image_path, 'rb') as img_file:
+            files = {'image': img_file}
+            flask_response = requests.post(url, files=files)
+            prediction_result_flask = flask_response.json()
+            print(f"RESULT: {prediction_result_flask}")
+
         for result in results:
             prediction_result = {
                 'class' : f"{result.names[result.probs.top1]}",
                 'prob' : f"{result.probs.top1conf:.2f}"
             }        
 
-    return render(request, 'upload/upload_image.html', {'image_path': image_name, 'form': form, 'prediction_result': prediction_result})
+    return render(request, 'upload/upload_image.html', {'image_path': image_name, 'form': form, 'prediction_result': prediction_result, 'flask_response': prediction_result_flask})

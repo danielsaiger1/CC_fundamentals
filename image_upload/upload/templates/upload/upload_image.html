@@ -17,7 +17,12 @@
         <img src="/media/{{ image_path }}" alt="Hochgeladenes Bild" width="300px">
         <p><strong>Top Labels:</strong></p>
         <ul>
+            <p>Model local</p>
             {{prediction_result}}
+        </ul>
+        <ul>
+            <p>Model Flask</p>
+            {{flask_response}}
         </ul>
     {% endif %}
 </body>
