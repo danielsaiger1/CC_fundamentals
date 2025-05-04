@@ -5,13 +5,13 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_image():
     image_name = None
     prediction_result_flask = None
-    flask_classifier_url = 'http://localhost:5000/classify'  # Der externe Klassifizierungsserver
+    flask_classifier_url = 'http://localhost:5000/classify' 
 
     if request.method == 'POST':
         if 'image' not in request.files:
@@ -26,7 +26,6 @@ def upload_image():
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(image_path)
 
-            # Sende das Bild an den Flask-Klassifizierungs-Endpunkt
             with open(image_path, 'rb') as img_file:
                 files = {'image': img_file}
                 response = requests.post(flask_classifier_url, files=files)
