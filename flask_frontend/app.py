@@ -36,5 +36,5 @@ def upload_image():
 
     return render_template('index.html', image_path=image_name, flask_response=prediction_result_flask)
 
-if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+# if __name__ == '__main__':
+#     app.run(debug=True, port=8080)
