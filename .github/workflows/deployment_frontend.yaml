@@ -1,9 +1,9 @@
-name: Build and deploy frontend_one
+name: Build and deploy frontend
 
 on:
   push:
     paths:
-      - frontend_one/**
+      - frontend/**
   workflow_dispatch:
 
 jobs:
@@ -18,24 +18,24 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
-      - name: Install dependencies (for validation only)
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-        working-directory: ./frontend_one
+        working-directory: ./frontend
 
-      - name: Zip artifact (without virtual env)
+      - name: Zip artifact
         run: |
           zip -r release.zip . -x ".venv/*" "__pycache__/*" "*.pyc" ".git/*"
-        working-directory: ./frontend_one
+        working-directory: ./frontend
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: python-app-frontend-one
-          path: frontend_one/release.zip
+          name: python-app-frontend
+          path: frontend/release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: python-app-frontend-one
+          name: python-app-frontend
 
       - name: Unzip artifact
         run: unzip release.zip
@@ -57,6 +57,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'flask-new-test'
+          app-name: 'cc-fund-frontend-app'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZURE_PUBLISHPROFILE_FRONTEND_ONE }}
+          publish-profile: ${{ secrets.AZURE_PUBLISHPROFILE_FRONTEND }}
