@@ -7,6 +7,8 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 @app.route('/', methods=['GET', 'POST'])
 def upload_image():
     image_name = None
@@ -24,6 +26,7 @@ def upload_image():
         if file:
             filename = secure_filename(file.filename)
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
             file.save(image_path)
 
             with open(image_path, 'rb') as img_file:
