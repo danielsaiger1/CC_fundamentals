@@ -11,7 +11,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 def upload_image():
     image_name = None
     prediction_result_flask = None
-    flask_classifier_url = 'http://localhost:5001/classify' 
+    flask_classifier_url = 'http://localhost:5000/classify' 
 
     if request.method == 'POST':
         if 'image' not in request.files:
