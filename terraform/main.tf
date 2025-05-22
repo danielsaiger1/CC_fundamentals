@@ -9,7 +9,6 @@ resource "azurerm_service_plan" "asp" {
   resource_group_name = azurerm_resource_group.rg.name
   os_type             = "Linux"
   sku_name            = "B1"
-  reserved            = true
 }
 
 resource "azurerm_linux_web_app" "frontend-app" {
@@ -22,9 +21,16 @@ resource "azurerm_linux_web_app" "frontend-app" {
   public_network_access_enabled = true
 
   site_config {
-    linux_fx_version          = "PYTHON|3.13"
-    always_on                 = false
-    http2_enabled             = false
+    always_on     = false
+    http2_enabled = false
+
+    application_stack {
+      python_version = "3.11"
+    }
+  }
+
+  app_settings = {
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
   }
 
   identity {
@@ -33,7 +39,7 @@ resource "azurerm_linux_web_app" "frontend-app" {
 }
 
 resource "azurerm_linux_web_app" "classification-app" {
-  name                = "cc-fund-classification-app"
+  name                = "cc-fund-classification-api"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.asp.id
@@ -42,9 +48,16 @@ resource "azurerm_linux_web_app" "classification-app" {
   public_network_access_enabled = true
 
   site_config {
-    linux_fx_version          = "PYTHON|3.11"
-    always_on                 = false
-    http2_enabled             = false
+    always_on     = false
+    http2_enabled = false
+
+    application_stack {
+      python_version = "3.11"
+    }
+  }
+
+  app_settings = {
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
   }
 
   identity {
