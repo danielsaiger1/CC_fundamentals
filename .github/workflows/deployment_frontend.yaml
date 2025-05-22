@@ -1,0 +1,62 @@
+name: Build and deploy frontend_one
+
+on:
+  push:
+    paths:
+      - frontend_one/**
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies (for validation only)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        working-directory: ./frontend_one
+
+      - name: Zip artifact (without virtual env)
+        run: |
+          zip -r release.zip . -x ".venv/*" "__pycache__/*" "*.pyc" ".git/*"
+        working-directory: ./frontend_one
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-app-frontend-one
+          path: frontend_one/release.zip
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-app-frontend-one
+
+      - name: Unzip artifact
+        run: unzip release.zip
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
+        with:
+          app-name: 'flask-new-test'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_PUBLISHPROFILE_FRONTEND_ONE }}
