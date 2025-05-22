@@ -37,5 +37,3 @@ def classify_image():
     except Exception as e:
         import traceback
         return jsonify({'error': str(e), 'trace': traceback.format_exc()}), 500
-
-# hallo
