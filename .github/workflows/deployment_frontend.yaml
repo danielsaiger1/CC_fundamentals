@@ -60,4 +60,6 @@ jobs:
           app-name: 'cc-fund-frontend-app'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_PUBLISHPROFILE_FRONTEND }}
+#test von test branch
 # test von master remote
+
