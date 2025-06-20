@@ -145,3 +145,22 @@ resource "azurerm_private_endpoint" "classification-app-pe" {
     private_dns_zone_ids = [azurerm_private_dns_zone.dns-zone.id]
   }
 }
+
+# resource "azurerm_linux_web_app" "demo-app" {
+#   name                = "cc-fund-demo-app"
+#   location            = azurerm_resource_group.rg.location
+#   resource_group_name = azurerm_resource_group.rg.name
+#   service_plan_id     = azurerm_service_plan.asp.id
+#   https_only          = true
+#   client_certificate_mode = "Required"
+#   public_network_access_enabled = true
+
+#   site_config {
+#     always_on     = false
+#     http2_enabled = false
+
+#     application_stack {
+#       python_version = "3.11"
+#     }
+#   }
+# }
