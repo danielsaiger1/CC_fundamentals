@@ -163,5 +163,12 @@ resource "azurerm_private_endpoint" "classification-app-pe" {
 #       python_version = "3.11"
 #     }
 #   }
+
+#   app_settings = {
+#     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
+#   }
+
+#   identity {
+#     type = "SystemAssigned"
+#   }
 # }
-#
