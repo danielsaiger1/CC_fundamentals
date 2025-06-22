@@ -1,9 +1,9 @@
 name: Build and deploy frontend
 
-on:
+on: # Gibt vor, wann der Workflow ausgeführt werden soll
   push:
     paths:
-      - frontend/**
+      - frontend/** # Wenn Änderungen im Ordner "frontend" vorgenommen werden
   workflow_dispatch:
 
 jobs:
@@ -13,25 +13,25 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4 #Holt Code/Dateien aus dem Repository
 
-      - name: Set up Python
+      - name: Set up Python # Installiert Python auf dem Runner. Runner = Virtuelle Maschine, die von Github bereitgestellt wird, startet für jeden Workflow und wird danach wieder gelöscht
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install dependencies # Installiert die Abhängigkeiten (Python-Pakete)
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
         working-directory: ./frontend
 
-      - name: Zip artifact
+      - name: Zip artifact # Erstellt eine .zip-Archiv (release.zip) das den Inhalt des Ordners enthält
         run: |
           zip -r release.zip . -x ".venv/*" "__pycache__/*" "*.pyc" ".git/*"
         working-directory: ./frontend
 
-      - name: Upload artifact
+      - name: Upload artifact # Lädt das erstellte .zip-Archiv als Artefakt hoch, damit es im Deployment verwendet werden kann
         uses: actions/upload-artifact@v4
         with:
           name: python-app-frontend
@@ -45,18 +45,18 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact
+      - name: Download artifact # Lädt das zuvor hochgeladene Artefakt herunter
         uses: actions/download-artifact@v4
         with:
           name: python-app-frontend
 
-      - name: Unzip artifact
+      - name: Unzip artifact # Entpackt das heruntergeladene .zip-Archiv
         run: unzip release.zip
 
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v3 # GitHub Action, die speziell dafür entwickelt wurde, um Anwendungen auf Azure Web Apps zu deployen
         id: deploy-to-webapp
         with:
           app-name: 'cc-fund-frontend-app'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZURE_PUBLISHPROFILE_FRONTEND }}
+          publish-profile: ${{ secrets.AZURE_PUBLISHPROFILE_FRONTEND }} # Liegt im Repository als Secret ab
