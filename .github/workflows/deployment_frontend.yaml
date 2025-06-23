@@ -13,7 +13,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4 #Holt Code/Dateien aus dem Repository
+      - uses: actions/checkout@v4 # Holt Code/Dateien aus dem Repository
 
       - name: Set up Python # Installiert Python auf dem Runner. Runner = Virtuelle Maschine, die von Github bereitgestellt wird, startet für jeden Workflow und wird danach wieder gelöscht
         uses: actions/setup-python@v5
