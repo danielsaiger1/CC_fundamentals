@@ -178,7 +178,7 @@ cython_debug/
 
 # Terraform
 *.tfvars
-*.tfstate
+terraform.tfstate
 *.tfstate.backup
 *.tfstate.lock.info
 .terraform/
